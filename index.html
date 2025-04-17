@@ -215,6 +215,13 @@
     <div id="game-container" style="display: none;"></div>
     <canvas id="confetti-canvas"></canvas>
 
+    <!-- Audio elements for sound effects -->
+    <audio id="flip-sound" src="sounds/flip.mp3" preload="auto"></audio>
+    <audio id="hint-sound" src="sounds/hint.mp3" preload="auto"></audio>
+    <audio id="match-sound" src="sounds/match.mp3" preload="auto"></audio>
+    <audio id="mismatch-sound" src="sounds/mismatch.mp3" preload="auto"></audio>
+    <audio id="win-sound" src="sounds/win.mp3" preload="auto"></audio>
+
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
@@ -252,6 +259,21 @@
         let scores = { user1: 0, user2: 0 };
         let nicknames = { user1: 'User 1', user2: 'User 2' };
         let myNickname = '';
+
+        // Initialize audio elements
+        const flipSound = document.getElementById('flip-sound');
+        const hintSound = document.getElementById('hint-sound');
+        const matchSound = document.getElementById('match-sound');
+        const mismatchSound = document.getElementById('mismatch-sound');
+        const winSound = document.getElementById('win-sound');
+
+        // Function to play sound with error handling
+        function playSound(audio) {
+            audio.currentTime = 0; // Reset to start
+            audio.play().catch((error) => {
+                console.error('Error playing sound:', error);
+            });
+        }
 
         // Get game ID from URL or create a new game
         const urlParams = new URLSearchParams(window.location.search);
@@ -392,6 +414,9 @@
                 card.classList.add('flipped');
                 flippedCards.push(card);
 
+                // Play flip sound
+                playSound(flipSound);
+
                 if (flippedCards.length === 2) {
                     setTimeout(checkMatch, 1000);
                 }
@@ -412,6 +437,9 @@
                 card1.classList.add('matched');
                 card2.classList.add('matched');
 
+                // Play match sound
+                playSound(matchSound);
+
                 gameRef.update({
                     scores: scores,
                     matchedCards: matchedCards,
@@ -424,6 +452,8 @@
                     setTimeout(() => {
                         const winner = scores.user1 > scores.user2 ? nicknames.user1 : scores.user2 > scores.user1 ? nicknames.user2 : 'It\'s a tie';
                         alert(`Game Over! ${winner} wins! ${nicknames.user1}: ${scores.user1}, ${nicknames.user2}: ${scores.user2}`);
+                        // Play win sound
+                        playSound(winSound);
                         triggerConfetti(true);
                     }, 500);
                 }
@@ -432,6 +462,9 @@
                 card2.classList.remove('flipped');
                 card1.classList.add('no-match');
                 card2.classList.add('no-match');
+
+                // Play mismatch sound
+                playSound(mismatchSound);
             }
 
             flippedCards = [];
@@ -447,6 +480,9 @@
             }
             stars -= 2;
             gameRef.update({ stars: stars });
+
+            // Play hint sound
+            playSound(hintSound);
 
             const unmatchedIndices = cards.map((_, i) => i).filter(i => !matchedCards.includes(i));
             const unmatchedCards = Array.from(document.querySelectorAll('.card')).filter(card => unmatchedIndices.includes(parseInt(card.dataset.index)));
