@@ -1,502 +1,455 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multiplayer Emoji Memory Game</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Special+Elite&display=swap');
-        
-        body {
-            font-family: 'Special Elite', monospace;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background-color: #f5f5f5;
-            margin: 0;
-            padding: 20px;
-            color: #333;
-            min-height: 100vh;
-        }
-        
-        h1 {
-            font-size: 2.5em;
-            color: #333;
-            margin-bottom: 30px;
-            letter-spacing: 1px;
-        }
-        
-        #game-container {
-            display: grid;
-            grid-template-columns: repeat(8, 65px);
-            gap: 8px;
-            margin: 20px 0;
-            padding: 15px;
-            background: #fff;
-            border-radius: 4px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            position: relative;
-        }
-        
-        .card {
-            width: 65px;
-            height: 65px;
-            background-color: #fff;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 1.5em;
-            cursor: pointer;
-            position: relative;
-            transform-style: preserve-3d;
-            transition: transform 0.6s ease;
-        }
-        
-        .card:hover {
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-        
-        .card.flipped {
-            transform: rotateY(180deg);
-        }
-        
-        .card .front, .card .back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            backface-visibility: hidden;
-            border-radius: 4px;
-        }
-        
-        .card .front {
-            background: #fff;
-            transform: rotateY(180deg);
-        }
-        
-        .card .back {
-            background: #eee;
-            transform: rotateY(0deg);
-        }
-        
-        .card.matched .front {
-            background: #e6f7e6;
-        }
-        
-        .card.no-match {
-            animation: shake 0.5s ease;
-        }
-        
-        @keyframes shake {
-            0%, 100% { transform: rotateY(0deg) translateX(0); }
-            25% { transform: rotateY(0deg) translateX(-5px); }
-            75% { transform: rotateY(0deg) translateX(5px); }
-        }
-        
-        #scores {
-            font-size: 1.2em;
-            margin: 15px 0;
-            display: flex;
-            gap: 30px;
-            color: #333;
-        }
-        
-        #scores div {
-            padding: 5px 15px;
-            border-bottom: 1px solid #ddd;
-        }
-        
-        #scores span.nickname {
-            font-weight: bold;
-        }
-        
-        #stars {
-            font-size: 1.2em;
-            margin: 10px 0;
-            color: #333;
-            padding: 5px 15px;
-        }
-        
-        #hint-btn, #share-btn, #join-btn {
-            padding: 8px 16px;
-            font-size: 0.9em;
-            font-family: 'Special Elite', monospace;
-            border: 1px solid #333;
-            background-color: #fff;
-            border-radius: 0;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            margin: 5px;
-        }
-        
-        #hint-btn:hover, #share-btn:hover, #join-btn:hover {
-            background-color: #eee;
-        }
-        
-        #hint-btn:disabled {
-            background-color: #eee;
-            color: #999;
-            cursor: not-allowed;
-        }
-        
-        #turn {
-            font-size: 1.1em;
-            margin: 10px 0;
-            color: #333;
-            padding: 5px 15px;
-        }
-        
-        #nickname-container {
-            margin: 20px 0;
-            text-align: center;
-        }
-        
-        #nickname-input {
-            padding: 8px;
-            font-size: 1em;
-            font-family: 'Special Elite', monospace;
-            border: 1px solid #333;
-            background: #fff;
-            margin-right: 10px;
-        }
-        
-        #nickname-input:focus {
-            outline: none;
-            border-color: #666;
-        }
-        
-        #confetti-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1000;
-        }
-        
-        @media (max-width: 650px) {
-            #game-container {
-                grid-template-columns: repeat(4, 65px);
-                gap: 6px;
-                padding: 10px;
-            }
-            
-            .card {
-                width: 65px;
-                height: 65px;
-                font-size: 1.3em;
-            }
-            
-            h1 {
-                font-size: 1.8em;
-            }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Multiplayer Emoji Memory Game</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Special+Elite&display=swap');
+
+    body {
+      font-family: 'Special Elite', monospace;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+      min-height: 100vh;
+    }
+
+    h1 {
+      font-size: 2.5em;
+      color: #333;
+      margin-bottom: 30px;
+      letter-spacing: 1px;
+    }
+
+    #game-container {
+      display: grid;
+      grid-template-columns: repeat(8, 65px);
+      gap: 8px;
+      margin: 20px 0;
+      padding: 15px;
+      background: #fff;
+      border-radius: 4px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+
+    .card {
+      width: 65px;
+      height: 65px;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.5em;
+      cursor: pointer;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.6s ease;
+    }
+
+    .card:hover {
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .card.flipped {
+      transform: rotateY(180deg);
+    }
+
+    .card .front, .card .back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      backface-visibility: hidden;
+      border-radius: 4px;
+    }
+
+    .card .front {
+      background: #fff;
+      transform: rotateY(180deg);
+    }
+
+    .card .back {
+      background: #eee;
+      transform: rotateY(0deg);
+    }
+
+    .card.matched .front {
+      background: #e6f7e6;
+    }
+
+    .card.no-match {
+      animation: shake 0.5s ease;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: rotateY(0deg) translateX(0); }
+      25%      { transform: rotateY(0deg) translateX(-5px); }
+      75%      { transform: rotateY(0deg) translateX(5px); }
+    }
+
+    #scores {
+      font-size: 1.2em;
+      margin: 15px 0;
+      display: flex;
+      gap: 30px;
+      color: #333;
+    }
+
+    #scores div {
+      padding: 5px 15px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    #stars {
+      font-size: 1.2em;
+      margin: 10px 0;
+      color: #333;
+      padding: 5px 15px;
+    }
+
+    #hint-btn, #share-btn, #join-btn {
+      padding: 8px 16px;
+      font-size: 0.9em;
+      font-family: 'Special Elite', monospace;
+      border: 1px solid #333;
+      background-color: #fff;
+      border-radius: 0;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin: 5px;
+    }
+
+    #hint-btn:hover, #share-btn:hover, #join-btn:hover {
+      background-color: #eee;
+    }
+
+    #hint-btn:disabled {
+      background-color: #eee;
+      color: #999;
+      cursor: not-allowed;
+    }
+
+    #turn {
+      font-size: 1.1em;
+      margin: 10px 0;
+      color: #333;
+      padding: 5px 15px;
+    }
+
+    #nickname-container {
+      margin: 20px 0;
+      text-align: center;
+    }
+
+    #nickname-input {
+      padding: 8px;
+      font-size: 1em;
+      font-family: 'Special Elite', monospace;
+      border: 1px solid #333;
+      background: #fff;
+      margin-right: 10px;
+    }
+
+    #nickname-input:focus {
+      outline: none;
+      border-color: #666;
+    }
+
+    #confetti-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    @media (max-width: 650px) {
+      #game-container {
+        grid-template-columns: repeat(4, 65px);
+        gap: 6px;
+        padding: 10px;
+      }
+      .card {
+        width: 65px;
+        height: 65px;
+        font-size: 1.3em;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+  </style>
 </head>
 <body>
-    <h1>Multiplayer Emoji Memory Game</h1>
-    <div id="nickname-container">
-        <input type="text" id="nickname-input" placeholder="Enter your nickname" maxlength="15">
-        <button id="join-btn" onclick="joinGame()">Join Game</button>
-    </div>
-    <div id="scores" style="display: none;">
-        <div><span id="nickname-user1" class="nickname">User 1</span>: <span id="score-user1">0</span></div>
-        <div><span id="nickname-user2" class="nickname">User 2</span>: <span id="score-user2">0</span></div>
-    </div>
-    <div id="turn" style="display: none;">Waiting for players...</div>
-    <div id="stars" style="display: none;">Stars: <span id="stars-value">0</span> ⭐</div>
-    <button id="hint-btn" style="display: none;" onclick="useHint()">Use Hint (Costs 2 Stars)</button>
-    <button id="share-btn" style="display: none;" onclick="shareGame()">Share Game Link</button>
-    <div id="game-container" style="display: none;"></div>
-    <canvas id="confetti-canvas"></canvas>
+  <h1>Multiplayer Emoji Memory Game</h1>
+  <div id="nickname-container">
+    <input type="text" id="nickname-input" placeholder="Enter your nickname" maxlength="15">
+    <button id="join-btn" onclick="joinGame()">Join Game</button>
+  </div>
+  <div id="scores" style="display: none;">
+    <div><span id="nickname-user1" class="nickname">User 1</span>: <span id="score-user1">0</span></div>
+    <div><span id="nickname-user2" class="nickname">User 2</span>: <span id="score-user2">0</span></div>
+  </div>
+  <div id="turn" style="display: none;">Waiting for players...</div>
+  <div id="stars" style="display: none;">Stars: <span id="stars-value">0</span> ⭐</div>
+  <button id="hint-btn" style="display: none;" onclick="useHint()">Use Hint (Costs 2 Stars)</button>
+  <button id="share-btn" style="display: none;" onclick="shareGame()">Share Game Link</button>
+  <div id="game-container" style="display: none;"></div>
+  <canvas id="confetti-canvas"></canvas>
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-    <!-- Confetti.js for celebration effects -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+  <!-- Confetti.js -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
 
-    <script>
-        // Initialize Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyAWO12ZaJANU0WcyeHtZcyad2ZZU6soOgA",
-            authDomain: "emoji-memory-63ca0.firebaseapp.com",
-            databaseURL: "https://emoji-memory-63ca0-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "emoji-memory-63ca0",
-            storageBucket: "emoji-memory-63ca0.firebasestorage.app",
-            messagingSenderId: "919586705672",
-            appId: "1:919586705672:web:d79f825e31112dc0dfdcbd",
-            measurementId: "G-M4VRSZN21W"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+  <script>
+    // Initialize Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyAWO12ZaJANU0WcyeHtZcyad2ZZU6soOgA",
+      authDomain: "emoji-memory-63ca0.firebaseapp.com",
+      databaseURL: "https://emoji-memory-63ca0-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "emoji-memory-63ca0",
+      storageBucket: "emoji-memory-63ca0.firebasestorage.app",
+      messagingSenderId: "919586705672",
+      appId: "1:919586705672:web:d79f825e31112dc0dfdcbd",
+      measurementId: "G-M4VRSZN21W"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-        // Expanded emoji list for 8x8 grid (32 pairs = 64 cards)
-        const emojis = [
-            '🐱', '🐶', '🐼', '🦁', '🐸', '🦊', '🐵', '🐮', '🦄', '🦖', '🐙', '🦉',
-            '🦔', '🦦', '🦨', '🦝', '🐺', '🦇', '🦅', '🦜', '🦢', '🦚', '🦩', '🐝',
-            '🦋', '🐌', '🐢', '🦎', '🐊', '🦕', '🐋', '🦈'
-        ];
-        const cards = [...emojis, ...emojis];
-        let flippedCards = [];
-        let matchedCards = [];
-        let stars = 0;
-        let currentPlayer = null;
-        let playerId = null;
-        let gameId = null;
-        let scores = { user1: 0, user2: 0 };
-        let nicknames = { user1: 'User 1', user2: 'User 2' };
-        let myNickname = '';
+    // Preload sound effects
+    const flipSound     = new Audio('sounds/flip.mp3');
+    const matchSound    = new Audio('sounds/match.mp3');
+    const mismatchSound = new Audio('sounds/mismatch.mp3');
+    const hintSound     = new Audio('sounds/hint.mp3');
+    const winSound      = new Audio('sounds/wi.mp3');
 
-        // Get game ID from URL or create a new game
-        const urlParams = new URLSearchParams(window.location.search);
-        gameId = urlParams.get('gameId') || Date.now().toString();
-        if (!urlParams.get('gameId')) {
-            window.history.replaceState({}, '', `?gameId=${gameId}`);
+    // Emoji setup
+    const emojis = [
+      '🐱','🐶','🐼','🦁','🐸','🦊','🐵','🐮',
+      '🦄','🦖','🐙','🦉','🦔','🦦','🦨','🦝',
+      '🐺','🦇','🦅','🦜','🦢','🦚','🦩','🐝',
+      '🦋','🐌','🐢','🦎','🐊','🦕','🐋','🦈'
+    ];
+    const cards = [...emojis, ...emojis];
+
+    let flippedCards = [], matchedCards = [], stars = 0;
+    let currentPlayer = null, playerId = null, gameId = null;
+    let scores = { user1: 0, user2: 0 };
+    let nicknames = { user1: 'User 1', user2: 'User 2' };
+    let myNickname = '';
+
+    // Get or set gameId
+    const urlParams = new URLSearchParams(window.location.search);
+    gameId = urlParams.get('gameId') || Date.now().toString();
+    if (!urlParams.get('gameId')) {
+      window.history.replaceState({}, '', `?gameId=${gameId}`);
+    }
+    const gameRef = db.ref(`games/${gameId}`);
+
+    function joinGame() {
+      myNickname = document.getElementById('nickname-input').value.trim();
+      if (!myNickname) return alert('Please enter a nickname!');
+      gameRef.once('value', snap => {
+        const state = snap.val();
+        if (!state) {
+          initGame();
+          playerId = 'user1';
+          gameRef.child('players').set({ user1: myNickname, user2: null });
+          nicknames.user1 = myNickname;
+        } else {
+          const p = state.players || {};
+          if (!p.user1) {
+            playerId = 'user1';
+            gameRef.child('players').update({ user1: myNickname });
+            nicknames.user1 = myNickname;
+          } else if (!p.user2) {
+            playerId = 'user2';
+            gameRef.child('players').update({ user2: myNickname });
+            nicknames.user2 = myNickname;
+          } else return alert('Game is full!');
         }
+        document.getElementById('nickname-container').style.display='none';
+        document.getElementById('scores').style.display='flex';
+        document.getElementById('turn').style.display='block';
+        document.getElementById('stars').style.display='block';
+        document.getElementById('hint-btn').style.display='inline-block';
+        document.getElementById('share-btn').style.display='inline-block';
+        document.getElementById('game-container').style.display='grid';
+        listenForUpdates();
+      });
+    }
 
-        const gameRef = db.ref(`games/${gameId}`);
+    function initGame() {
+      shuffle(cards);
+      gameRef.set({
+        cards,
+        scores: { user1:0, user2:0 },
+        currentPlayer:'user1',
+        matchedCards:[],
+        stars:0,
+        players:{ user1: myNickname, user2: null }
+      });
+    }
 
-        // Join the game with a nickname
-        function joinGame() {
-            myNickname = document.getElementById('nickname-input').value.trim();
-            if (!myNickname) {
-                alert('Please enter a nickname!');
-                return;
-            }
+    function listenForUpdates() {
+      gameRef.on('value', snap => {
+        const state = snap.val();
+        if (!state) return;
+        scores = state.scores;
+        currentPlayer = state.currentPlayer;
+        matchedCards = state.matchedCards;
+        stars = state.stars;
+        nicknames = state.players;
+        document.getElementById('score-user1').textContent = scores.user1;
+        document.getElementById('score-user2').textContent = scores.user2;
+        document.getElementById('nickname-user1').textContent = nicknames.user1||'User 1';
+        document.getElementById('nickname-user2').textContent = nicknames.user2||'User 2';
+        document.getElementById('stars-value').textContent = stars;
+        document.getElementById('turn').textContent =
+          currentPlayer==='user1'
+            ? `${nicknames.user1}'s Turn`
+            : `${nicknames.user2}'s Turn`;
+        document.getElementById('game-container').style.pointerEvents =
+          currentPlayer===playerId ? 'auto' : 'none';
+        renderCards(state.cards||cards);
+      });
+    }
 
-            gameRef.once('value', (snapshot) => {
-                const gameState = snapshot.val();
-                if (!gameState) {
-                    initializeGameInFirebase();
-                    playerId = 'user1';
-                    gameRef.child('players').set({ user1: myNickname, user2: null });
-                    nicknames.user1 = myNickname;
-                } else {
-                    const players = gameState.players || {};
-                    if (!players.user1) {
-                        playerId = 'user1';
-                        gameRef.child('players').update({ user1: myNickname });
-                        nicknames.user1 = myNickname;
-                    } else if (!players.user2) {
-                        playerId = 'user2';
-                        gameRef.child('players').update({ user2: myNickname });
-                        nicknames.user2 = myNickname;
-                    } else {
-                        alert('Game is full!');
-                        return;
-                    }
-                }
+    function shuffle(arr){
+      for(let i=arr.length-1;i>0;i--){
+        const j=Math.floor(Math.random()*(i+1));
+        [arr[i],arr[j]]=[arr[j],arr[i]];
+      }
+    }
 
-                document.getElementById('nickname-container').style.display = 'none';
-                document.getElementById('scores').style.display = 'flex';
-                document.getElementById('turn').style.display = 'block';
-                document.getElementById('stars').style.display = 'block';
-                document.getElementById('hint-btn').style.display = 'inline-block';
-                document.getElementById('share-btn').style.display = 'inline-block';
-                document.getElementById('game-container').style.display = 'grid';
+    function isMobile(){ return window.innerWidth<=650; }
 
-                listenForGameUpdates();
-            });
+    function renderCards(cardArr){
+      const container = document.getElementById('game-container');
+      container.innerHTML='';
+      container.style.gridTemplateColumns = isMobile()
+        ? 'repeat(4,65px)' : 'repeat(8,65px)';
+      cardArr.forEach((emoji,i)=>{
+        const c = document.createElement('div');
+        c.classList.add('card');
+        c.dataset.emoji = emoji;
+        c.dataset.index = i;
+        c.innerHTML=`
+          <div class="front">${emoji}</div>
+          <div class="back"></div>
+        `;
+        if(matchedCards.includes(i)) c.classList.add('matched','flipped');
+        c.addEventListener('click',()=>flipCard(c));
+        container.appendChild(c);
+      });
+    }
+
+    function flipCard(card){
+      if(currentPlayer!==playerId) return;
+      const idx = +card.dataset.index;
+      if(flippedCards.length<2 &&
+         !flippedCards.includes(card) &&
+         !matchedCards.includes(idx)) {
+        flipSound.play();
+        card.classList.add('flipped');
+        flippedCards.push(card);
+        if(flippedCards.length===2) setTimeout(checkMatch,1000);
+      }
+    }
+
+    function checkMatch(){
+      const [c1,c2] = flippedCards;
+      const i1=+c1.dataset.index, i2=+c2.dataset.index;
+      if(c1.dataset.emoji===c2.dataset.emoji){
+        matchSound.play();
+        matchedCards.push(i1,i2);
+        scores[currentPlayer]+=10;
+        stars+=1;
+        c1.classList.add('matched');
+        c2.classList.add('matched');
+        gameRef.update({ scores, matchedCards, stars });
+        triggerConfetti();
+        if(matchedCards.length===cards.length){
+          setTimeout(()=>{
+            winSound.play();
+            const winner =
+              scores.user1>scores.user2
+                ? nicknames.user1
+                : scores.user2>scores.user1
+                  ? nicknames.user2
+                  : "It's a tie";
+            alert(`Game Over! ${winner} wins! ${nicknames.user1}: ${scores.user1}, ${nicknames.user2}: ${scores.user2}`);
+            triggerConfetti(true);
+          },500);
         }
+      } else {
+        mismatchSound.play();
+        c1.classList.remove('flipped');
+        c2.classList.remove('flipped');
+        c1.classList.add('no-match');
+        c2.classList.add('no-match');
+      }
+      flippedCards = [];
+      currentPlayer = currentPlayer==='user1'?'user2':'user1';
+      gameRef.update({ currentPlayer });
+    }
 
-        // Listen for game state updates
-        function listenForGameUpdates() {
-            gameRef.on('value', (snapshot) => {
-                const gameState = snapshot.val();
-                if (!gameState) return;
+    function useHint(){
+      if(stars<2) return alert("You need at least 2 stars to use a hint!");
+      hintSound.play();
+      stars-=2;
+      gameRef.update({ stars });
+      const unmatched = cards.map((_,i)=>i).filter(i=>!matchedCards.includes(i));
+      const domCards = Array.from(document.querySelectorAll('.card'))
+                            .filter(c=>unmatched.includes(+c.dataset.index));
+      const emojisLeft = [...new Set(domCards.map(c=>c.dataset.emoji))];
+      const choice = emojisLeft[Math.floor(Math.random()*emojisLeft.length)];
+      const hintCards = domCards.filter(c=>c.dataset.emoji===choice);
+      hintCards.forEach(c=>{
+        c.classList.add('flipped');
+        setTimeout(()=>{
+          if(!matchedCards.includes(+c.dataset.index))
+            c.classList.remove('flipped');
+        },2000);
+      });
+    }
 
-                scores = gameState.scores || { user1: 0, user2: 0 };
-                currentPlayer = gameState.currentPlayer || 'user1';
-                matchedCards = gameState.matchedCards || [];
-                stars = gameState.stars || 0;
-                nicknames = gameState.players || { user1: 'User 1', user2: 'User 2' };
+    function shareGame(){
+      const link = `${window.location.origin}${window.location.pathname}?gameId=${gameId}`;
+      navigator.clipboard.writeText(link)
+        .then(()=>alert('Game link copied to clipboard!'));
+    }
 
-                document.getElementById('score-user1').textContent = scores.user1;
-                document.getElementById('score-user2').textContent = scores.user2;
-                document.getElementById('nickname-user1').textContent = nicknames.user1 || 'User 1';
-                document.getElementById('nickname-user2').textContent = nicknames.user2 || 'User 2';
-                document.getElementById('stars-value').textContent = stars;
-                document.getElementById('turn').textContent = currentPlayer === 'user1' ? `${nicknames.user1}'s Turn` : `${nicknames.user2}'s Turn`;
-                document.getElementById('game-container').style.pointerEvents = currentPlayer === playerId ? 'auto' : 'none';
+    function triggerConfetti(isOver=false){
+      const duration = isOver?3000:1000;
+      const end = Date.now()+duration;
+      const defaults = { startVelocity:20, spread:180, ticks:50, zIndex:1000 };
+      const interval = setInterval(()=>{
+        const timeLeft = end - Date.now();
+        if(timeLeft<=0) return clearInterval(interval);
+        const count = isOver?50:20;
+        confetti(Object.assign({}, defaults, {
+          particleCount: count,
+          origin: { x: Math.random(), y: Math.random()-0.2 }
+        }));
+      },250);
+    }
 
-                renderCards(gameState.cards || cards);
-            });
-        }
-
-        // Initialize game in Firebase
-        function initializeGameInFirebase() {
-            shuffle(cards);
-            gameRef.set({
-                cards: cards,
-                scores: { user1: 0, user2: 0 },
-                currentPlayer: 'user1',
-                matchedCards: [],
-                stars: 0,
-                players: { user1: myNickname, user2: null }
-            });
-        }
-
-        // Shuffle cards
-        function shuffle(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-        }
-
-        // Check if device is mobile
-        function isMobile() {
-            return window.innerWidth <= 650;
-        }
-
-        // Render cards
-        function renderCards(cards) {
-            const gameContainer = document.getElementById('game-container');
-            gameContainer.innerHTML = '';
-            
-            // Adjust grid columns based on screen size
-            if (isMobile()) {
-                gameContainer.style.gridTemplateColumns = 'repeat(4, 65px)';
-            } else {
-                gameContainer.style.gridTemplateColumns = 'repeat(8, 65px)';
-            }
-            
-            cards.forEach((emoji, index) => {
-                const card = document.createElement('div');
-                card.classList.add('card');
-                card.dataset.emoji = emoji;
-                card.dataset.index = index;
-                card.innerHTML = `
-                    <div class="front">${emoji}</div>
-                    <div class="back"></div>
-                `;
-                if (matchedCards.includes(index)) {
-                    card.classList.add('matched');
-                    card.classList.add('flipped');
-                }
-                card.addEventListener('click', () => flipCard(card));
-                gameContainer.appendChild(card);
-            });
-        }
-
-        // Flip card logic
-        function flipCard(card) {
-            if (currentPlayer !== playerId) return;
-            if (flippedCards.length < 2 && !flippedCards.includes(card) && !matchedCards.includes(parseInt(card.dataset.index))) {
-                card.classList.add('flipped');
-                flippedCards.push(card);
-
-                if (flippedCards.length === 2) {
-                    setTimeout(checkMatch, 1000);
-                }
-            }
-        }
-
-        // Check for a match
-        function checkMatch() {
-            const [card1, card2] = flippedCards;
-            const index1 = parseInt(card1.dataset.index);
-            const index2 = parseInt(card2.dataset.index);
-
-            if (card1.dataset.emoji === card2.dataset.emoji) {
-                matchedCards.push(index1, index2);
-                scores[currentPlayer] += 10;
-                stars += 1;
-
-                card1.classList.add('matched');
-                card2.classList.add('matched');
-
-                gameRef.update({
-                    scores: scores,
-                    matchedCards: matchedCards,
-                    stars: stars
-                });
-
-                triggerConfetti();
-
-                if (matchedCards.length === cards.length) {
-                    setTimeout(() => {
-                        const winner = scores.user1 > scores.user2 ? nicknames.user1 : scores.user2 > scores.user1 ? nicknames.user2 : 'It\'s a tie';
-                        alert(`Game Over! ${winner} wins! ${nicknames.user1}: ${scores.user1}, ${nicknames.user2}: ${scores.user2}`);
-                        triggerConfetti(true);
-                    }, 500);
-                }
-            } else {
-                card1.classList.remove('flipped');
-                card2.classList.remove('flipped');
-                card1.classList.add('no-match');
-                card2.classList.add('no-match');
-            }
-
-            flippedCards = [];
-            currentPlayer = currentPlayer === 'user1' ? 'user2' : 'user1';
-            gameRef.update({ currentPlayer: currentPlayer });
-        }
-
-        // Hint system
-        function useHint() {
-            if (stars < 2) {
-                alert("You need at least 2 stars to use a hint!");
-                return;
-            }
-            stars -= 2;
-            gameRef.update({ stars: stars });
-
-            const unmatchedIndices = cards.map((_, i) => i).filter(i => !matchedCards.includes(i));
-            const unmatchedCards = Array.from(document.querySelectorAll('.card')).filter(card => unmatchedIndices.includes(parseInt(card.dataset.index)));
-            const unmatchedEmojis = [...new Set(unmatchedCards.map(card => card.dataset.emoji))];
-            const hintEmoji = unmatchedEmojis[Math.floor(Math.random() * unmatchedEmojis.length)];
-            const hintCards = unmatchedCards.filter(card => card.dataset.emoji === hintEmoji);
-
-            hintCards.forEach(card => {
-                card.classList.add('flipped');
-                setTimeout(() => {
-                    if (!matchedCards.includes(parseInt(card.dataset.index))) {
-                        card.classList.remove('flipped');
-                    }
-                }, 2000);
-            });
-        }
-
-        // Share game link
-        function shareGame() {
-            const shareLink = `${window.location.origin}${window.location.pathname}?gameId=${gameId}`;
-            navigator.clipboard.writeText(shareLink).then(() => {
-                alert('Game link copied to clipboard! Share it with a friend to play together.');
-            });
-        }
-
-        // Confetti effect for celebrations - more subtle for minimalist design
-        function triggerConfetti(isGameOver = false) {
-            const duration = isGameOver ? 3 * 1000 : 1 * 1000;
-            const animationEnd = Date.now() + duration;
-            const defaults = { startVelocity: 20, spread: 180, ticks: 50, zIndex: 1000 };
-
-            const interval = setInterval(function () {
-                const timeLeft = animationEnd - Date.now();
-
-                if (timeLeft <= 0) {
-                    return clearInterval(interval);
-                }
-
-                const particleCount = isGameOver ? 50 : 20;
-                confetti(Object.assign({}, defaults, {
-                    particleCount,
-                    origin: { x: Math.random(), y: Math.random() - 0.2 }
-                }));
-            }, 250);
-        }
-        
-        // Handle window resize for responsive grid
-        window.addEventListener('resize', () => {
-            renderCards(cards);
-        });
-    </script>
+    window.addEventListener('resize', () => renderCards(cards));
+  </script>
 </body>
 </html>
